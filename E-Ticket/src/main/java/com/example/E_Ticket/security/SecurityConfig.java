@@ -1,0 +1,83 @@
+package com.example.E_Ticket.security;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+@EnableWebSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
+    private final JwtAuthFilter jwtFilter;
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration c) throws Exception {
+        return c.getAuthenticationManager();
+    }
+
+    // 1) API (JWT, stateless)
+    @Bean @Order(1)
+    public SecurityFilterChain apiChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/api/**")
+                .csrf(csrf -> csrf.disable())
+                .cors(c -> {}) // bat CORS cho Security
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(a -> a
+                        // CHO PHEP LOGIN ADMIN
+                        .requestMatchers("/api/admin/v1/auth/login").permitAll()
+                        // endpoint chung
+                        .requestMatchers("/api/auth/**").permitAll()
+
+                        // cac api admin khac
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/public/**").hasRole("ADMIN")
+
+                        .requestMatchers("/uploads/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, e) -> res.setStatus(401))
+                        .accessDeniedHandler((req, res, e) -> res.setStatus(403))
+                );
+        return http.build();
+    }
+
+    // 2) Web (Thymeleaf – form login, stateful)
+    @Bean @Order(2)
+    public SecurityFilterChain webChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable()) // DEV: tắt cho nhẹ. PROD: bật lại cho form POST
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/", "/index", "/events/**", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                        .requestMatchers("/", "/index", "/register", "/login",
+                                "/verify","/resend","/verify/**",      // nếu có dùng kiểu /verify?token=...
+                                "/verify-code",
+                                "/css/**", "/js/**", "/images/**", "/uploads/**",
+                                "/h2-console/**", "/error", "/favicon.ico").permitAll()
+                        .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(f -> f
+                        .loginPage("/login")                  // GET /login -> trả form
+                        .loginProcessingUrl("/perform_login") // POST /perform_login -> Security xử lý
+                        .failureUrl("/login?error")
+                        .defaultSuccessUrl("/", false)
+                        .permitAll()
+                )
+                .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/").permitAll())
+                .headers(h -> h.frameOptions(fr -> fr.disable())); // cho H2 console
+        return http.build();
+    }
+}
