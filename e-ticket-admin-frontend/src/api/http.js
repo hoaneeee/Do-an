@@ -1,22 +1,39 @@
-import axios from "axios"
-import { useAuth } from "../store/auth"
+import axios from "axios";
+import { useAuth } from "../store/auth";
 
-export const http = axios.create({ baseURL: "/api" })
+export const http = axios.create({
+  baseURL: "/api",
+  withCredentials: true, // ok cả trong proxy, không hại
+  headers: { "X-Requested-With": "XMLHttpRequest" },
+});
 
-http.interceptors.request.use((config) => {
-  const token = useAuth.getState().token
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
-
+http.interceptors.request.use((c) => {
+  const full = (c.baseURL || "") + (c.url || "");
+  console.log(
+    "[HTTP] →",
+    c.method?.toUpperCase(),
+    full,
+    c.params || c.data || ""
+  );
+  const token = useAuth.getState().token;
+  if (token) c.headers.Authorization = `Bearer ${token}`;
+  return c;
+});
 http.interceptors.response.use(
-  (res) => res,
-  (error) => {
-    const status = error?.response?.status
-    if (status === 401) {
-      useAuth.getState().setToken(null)
-    }
-    // rất quan trọng: luôn throw ra để onSubmit bắt được
-    return Promise.reject(error)
+  (r) => {
+    console.log("[HTTP] ←", r.status, r.config.url, r.data);
+    return r;
+  },
+  (e) => {
+    const st = e?.response?.status,
+      url = e?.config?.url;
+    const msg =
+      e?.response?.data?.message ||
+      e?.response?.data?.error ||
+      e?.message ||
+      "Request error";
+    console.error("[HTTP ERR]", st, url, msg);
+    if (st === 401) useAuth.getState().setToken(null);
+    return Promise.reject(e);
   }
-)
+);

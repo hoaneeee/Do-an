@@ -21,9 +21,6 @@ public class AuthWebController {
     private final PasswordEncoder passwordEncoder;
     private final VerificationService verificationService;
 
-    @GetMapping("/")
-    public String index() { return "index"; }
-
     @GetMapping("/login")
     public String loginPage(@RequestParam(value="error", required=false) String error,
                             @RequestParam(value="registered", required=false) String registered,

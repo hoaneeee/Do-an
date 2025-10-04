@@ -1,16 +1,170 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="_layout :: html(~{::title}, ~{::section})">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="_layout :: html(~{::title}, ~{::style}, ~{::section})">
 <head>
     <title>Trang chủ</title>
+
+    <!-- CSS internal truyền vào layout -->
+    <style>
+        /* Hero */
+        .hero{
+            background: linear-gradient(180deg,#fff, #f7f9fc);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 28px rgba(0,0,0,.06);
+        }
+
+        /* Card */
+        .event-card{
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .event-card:hover{
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0,0,0,.10);
+        }
+
+        /* Ảnh 16:9 luôn có chiều cao */
+        .event-card .thumb{
+            width: 100%;
+            padding-top: 56.25%;              /* 16:9 */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            background-color: #eef2f7;        /* fallback */
+        }
+        .event-card .thumb::after{
+            content:""; position:absolute; inset:0;
+            background: linear-gradient(180deg, rgba(0,0,0,.0) 55%, rgba(0,0,0,.18));
+            pointer-events: none;
+        }
+
+        /* Badge thời gian trên ảnh */
+        .badge-on-thumb{
+            position: absolute; left: 10px; bottom: 10px;
+            padding: 6px 10px; border-radius: 10px;
+            font-size: .85rem; font-weight: 600; color: #fff;
+            background: rgba(15,23,42,.45); backdrop-filter: blur(6px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.25);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+
+        /* Body */
+        .event-card .title{ font-weight: 800; line-height: 1.25 }
+        .event-card .text-secondary{ font-size: .92rem }
+
+        /* Pagination */
+        .pagination .page-link{
+            border-radius: 10px; margin: 0 4px;
+            box-shadow: 0 8px 20px rgba(16,24,40,.07);
+        }
+        .pagination .page-item.active .page-link{
+            background: #0d6efd; border-color: #0d6efd;
+        }
+    </style>
 </head>
 <body>
-<section>
-    <div class="p-5 bg-white rounded-3 shadow-sm">
-        <h1 class="mb-3">E-Ticket</h1>
-        <p class="text-secondary mb-4">Chào mừng bạn đến với hệ thống E-Ticket.</p>
-        <a href="/register" class="btn btn-primary">Đăng ký</a>
-        <a href="/login" class="btn btn-outline-secondary ms-2">Đăng nhập</a>
+<section class="container">
+    <!-- Hero -->
+    <div class="hero mb-4">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-8">
+                <h1 class="display-6 fw-bold mb-2">Khám phá & mua vé sự kiện</h1>
+                <p class="text-secondary mb-0">Tất cả sự kiện đang mở bán được hiển thị ngay tại đây.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="#list" class="btn btn-primary btn-lg">
+                    <i class="bi bi-ticket-perforated"></i> Xem sự kiện
+                </a>
+            </div>
+        </div>
     </div>
+
+    <!-- Danh sách sự kiện -->
+    <h5 id="list" class="mb-3 fw-bold">Sự kiện sắp diễn ra</h5>
+
+    <div class="row g-4" th:if="${events.content.size() > 0}">
+        <div class="col-12 col-md-6 col-lg-4" th:each="e : ${events.content}">
+            <div class="card event-card h-100 shadow-sm border-0">
+                <!-- Ảnh có banner -->
+                <a th:href="@{'/events/' + ${e.slug}}" class="d-block">
+                    <div class="thumb"
+                         th:if="${e.bannerUrl != null and !#strings.isEmpty(e.bannerUrl)}"
+                         th:style="|background-image:url(${e.bannerUrl});|">
+                        <div class="badge-on-thumb">
+                            <i class="bi bi-calendar-event"></i>
+                            <span th:text="${#temporals.format(e.eventDate, 'HH:mm dd/MM')}">20:00 31/12</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a th:href="@{'/events/' + ${e.slug}}" class="d-block"
+                   th:if="${e.bannerUrl == null or #strings.isEmpty(e.bannerUrl)}">
+                    <div class="thumb" style="background-image:url(/images/436000887_2804162509721983_276394660274999845_n.jpg)">
+                        <div class="badge-on-thumb">
+                            <i class="bi bi-calendar-event"></i>
+                            <span th:text="${#temporals.format(e.eventDate, 'HH:mm dd/MM')}">20:00 31/12</span>
+                        </div>
+                    </div>
+                </a>
+
+                <div class="card-body">
+                    <div class="title h5 mb-1">
+                        <a th:href="@{'/events/' + ${e.slug}}"
+                           class="text-decoration-none text-dark"
+                           th:text="${e.title}">Tên sự kiện</a>
+                    </div>
+                    <div class="text-secondary mb-2">
+                        <i class="bi bi-geo-alt"></i>
+                        <span th:if="${e.venueName != null and !#strings.isEmpty(e.venueName)}"
+                              th:text="${e.venueName}">Địa điểm</span>
+                        <span th:if="${e.venueName == null or #strings.isEmpty(e.venueName)}">—</span>
+                    </div>
+
+                    <!-- Làm cả card clickable -->
+                    <a th:href="@{'/events/' + ${e.slug}}" class="stretched-link" aria-label="Xem chi tiết"></a>
+                </div>
+
+                <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
+                    <a th:href="@{'/events/' + ${e.slug}}" class="btn btn-primary w-100">Mua vé</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty -->
+    <div class="alert alert-light border text-center py-5"
+         th:if="${events.content.size() == 0}">
+        Chưa có sự kiện nào đang mở bán.
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${events.totalPages > 1}" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:if="${events.first}">
+                <a class="page-link disabled" tabindex="-1" aria-disabled="true">«</a>
+            </li>
+            <li class="page-item" th:if="${!events.first}">
+                <a class="page-link" th:href="|/?page=${events.number - 1}&size=${events.size}|">«</a>
+            </li>
+
+            <li class="page-item active" th:each="i : ${pages}" th:if="${i == events.number}">
+                <span class="page-link" th:text="${i + 1}"></span>
+            </li>
+            <li class="page-item" th:each="i : ${pages}" th:if="${i != events.number}">
+                <a class="page-link" th:text="${i + 1}"
+                   th:href="|/?page=${i}&size=${events.size}|"></a>
+            </li>
+
+            <li class="page-item" th:if="${events.last}">
+                <a class="page-link disabled" tabindex="-1" aria-disabled="true">»</a>
+            </li>
+            <li class="page-item" th:if="${!events.last}">
+                <a class="page-link" th:href="|/?page=${events.number + 1}&size=${events.size}|">»</a>
+            </li>
+        </ul>
+    </nav>
 </section>
 </body>
 </html>

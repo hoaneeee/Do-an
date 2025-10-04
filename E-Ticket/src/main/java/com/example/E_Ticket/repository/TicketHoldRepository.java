@@ -13,4 +13,5 @@ public interface TicketHoldRepository extends JpaRepository<TicketHold, Long> {
     List<TicketHold> findByTicketType_IdAndStatusAndExpiresAtAfter(Long ticketTypeId, Status status, Instant now);
     List<TicketHold> findByStatusAndExpiresAtBefore(Status status, Instant time);
     Optional<TicketHold> findByIdAndStatus(Long id, Status status);
+
 }

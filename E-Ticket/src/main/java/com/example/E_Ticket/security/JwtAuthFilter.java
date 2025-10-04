@@ -38,19 +38,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             try {
                 // 3. Parse + verify JWT
-                var jws = jwtService.parse(token);
-                var claims = jws.getPayload();      //get payload (subject, roles, exp...)
-
+                var claims = jwtService.parse(token).getPayload();
                 String username = claims.getSubject();
-                String rolesStr = String.valueOf(claims.get("roles")); // "ROLE_ADMIN,ROLE_USER"
+                String rolesStr = String.valueOf(claims.get("roles"));  // "ROLE_ADMIN,ROLE_USER"
 
                 // 4. chuyen roles thanh List<SimpleGrantedAuthority>
-                List<SimpleGrantedAuthority> authorities = Arrays.stream(rolesStr.split(","))
-                        .map(String::trim)
-                        .filter(s -> !s.isBlank())
-                        .map(SimpleGrantedAuthority::new)
-                        .toList();
-
+                List<SimpleGrantedAuthority> authorities =
+                        rolesStr == null || rolesStr.isBlank()
+                                ? List.of()
+                                : Arrays.stream(rolesStr.split(","))
+                                .map(String::trim)
+                                .filter(s -> !s.isBlank())
+                                .map(SimpleGrantedAuthority::new)
+                                .toList();
                 // 5. create Authentication object
                 var authentication = new UsernamePasswordAuthenticationToken(
                         username,      // principal (chi luu username)

@@ -30,30 +30,22 @@ public class SecurityConfig {
         http
                 .securityMatcher("/api/**")
                 .csrf(csrf -> csrf.disable())
-                .cors(c -> {}) // bat CORS cho Security
+                .cors(c -> {})
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
-                        // CHO PHEP LOGIN ADMIN
                         .requestMatchers("/api/admin/v1/auth/login").permitAll()
-                        // endpoint chung
-                        .requestMatchers("/api/auth/**").permitAll()
-
-                        // cac api admin khac
+                        .requestMatchers("/api/public/**").permitAll()   // <--- public đúng nghĩa
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/public/**").hasRole("ADMIN")
-
                         .requestMatchers("/uploads/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement(sm->sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((req, res, e) -> res.setStatus(401))
                         .accessDeniedHandler((req, res, e) -> res.setStatus(403))
                 );
         return http.build();
     }
-
     // 2) Web (Thymeleaf – form login, stateful)
     @Bean @Order(2)
     public SecurityFilterChain webChain(HttpSecurity http) throws Exception {
@@ -76,7 +68,13 @@ public class SecurityConfig {
                         .defaultSuccessUrl("/", false)
                         .permitAll()
                 )
-                .logout(l -> l.logoutUrl("/logout").logoutSuccessUrl("/").permitAll())
+                .logout(l -> l
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
                 .headers(h -> h.frameOptions(fr -> fr.disable())); // cho H2 console
         return http.build();
     }

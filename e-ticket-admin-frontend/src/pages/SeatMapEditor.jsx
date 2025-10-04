@@ -16,13 +16,33 @@ export default function SeatMapEditor(){
   const [drawing, setDrawing] = useState(false)
   const [points, setPoints] = useState([])
 
-  useEffect(()=>{ listVenues(0,100).then(d => setVenues(d.content||[])) },[])
+useEffect(() => {
+  console.log("[SeatMapEditor] mount → listVenues");
+  listVenues(0, 100)
+    .then((d) => {
+      console.log("[SeatMapEditor] venues", d);
+      setVenues(d.content || []);
+    })
+    .catch((e) => console.error("[SeatMapEditor] venues error", e));
+}, []);
 
-  useEffect(()=>{
-    if(!venueId){ setMaps([]); setMapId(''); setMapUrl(''); setZones([]); return }
-    getSeatMapsByVenue(venueId).then(setMaps)
-  },[venueId])
-
+useEffect(() => {
+  console.log("[SeatMapEditor] venueId =", venueId);
+  if (!venueId) {
+    setMaps([]);
+    setMapId("");
+    setMapUrl("");
+    setZones([]);
+    return;
+  }
+  getSeatMapsByVenue(venueId)
+    .then((ms) => {
+      console.log("[SeatMapEditor] maps", ms);
+      setMaps(ms);
+    })
+    .catch((e) => console.error("[SeatMapEditor] maps error", e));
+}, [venueId]);
+////////////////////////////////////////////////////////////
   useEffect(()=>{
     if(!mapId){ setMapUrl(''); setZones([]); return }
     const m = maps.find(x=>x.id===Number(mapId))

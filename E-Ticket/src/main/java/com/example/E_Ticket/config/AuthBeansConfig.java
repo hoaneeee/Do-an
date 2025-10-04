@@ -24,13 +24,8 @@ public class AuthBeansConfig {
     public UserDetailsService userDetailsService() {
         return (String username) -> {
             User user = userRepository.findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(user.getEmail())
-                    .password(user.getPassword())
-                    .roles(user.getRole().replace("ROLE_", "")) // "ROLE_ADMIN" -> "ADMIN"
-                    .disabled(!user.getEnabled())
-                    .build();
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+            return new CustomUserDetails(user); // <-- TRẢ VỀ custom
         };
     }
 }

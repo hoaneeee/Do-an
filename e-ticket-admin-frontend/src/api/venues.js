@@ -1,7 +1,7 @@
 import { http } from './http';
 
-export const listVenues  = (page=0,size=50) =>
-  http.get('/admin/v1/venues', { params:{ page, size } }).then(r=>r.data);
+export const listVenues = (page = 0, size = 100) =>
+  http.get("/admin/v1/venues", { params: { page, size } }).then((r) => r.data);
 
 export const createVenue = (body) =>
   http.post('/admin/v1/venues', body).then(r=>r.data);

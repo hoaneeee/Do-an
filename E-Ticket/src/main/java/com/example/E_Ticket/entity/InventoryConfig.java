@@ -14,9 +14,11 @@ public class InventoryConfig {
     @JoinColumn(name="event_id", nullable = false)
     private Event event;
 
+    @Builder.Default
     @Column(nullable = false)
     private Integer holdTimeoutSec = 300;  // 5 phút
 
+    @Builder.Default
     @Column(nullable = false)
     private Boolean allowOverbook = false;
 }

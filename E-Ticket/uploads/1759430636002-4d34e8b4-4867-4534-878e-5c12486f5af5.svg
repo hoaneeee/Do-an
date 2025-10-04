@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700">
+  <defs>
+    <style>
+      .label{font-family: Inter, Arial, sans-serif; font-size:24px; fill:#333}
+      .zone{rx:20; ry:20; stroke:#333; stroke-width:2}
+      .hint{font-size:14px; fill:#666}
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1000" height="700" fill="#ffffff"/>
+
+  <!-- Stage -->
+  <rect x="380" y="80" width="240" height="60" fill="#232323" rx="12" ry="12"/>
+  <text x="500" y="120" text-anchor="middle" class="label" fill="#ffffff">STAGE</text>
+
+  <!-- Zone A -->
+  <rect x="140" y="180" width="720" height="110" class="zone" fill="#f1f3f5"/>
+  <text x="500" y="245" text-anchor="middle" class="label">ZONE A</text>
+
+  <!-- Zone B -->
+  <rect x="140" y="320" width="720" height="140" class="zone" fill="#edf2ff"/>
+  <text x="500" y="395" text-anchor="middle" class="label">ZONE B</text>
+
+  <!-- Zone C -->
+  <rect x="120" y="490" width="760" height="130" class="zone" fill="#fff3e0"/>
+  <text x="500" y="560" text-anchor="middle" class="label">ZONE C</text>
+
+  <!-- Hints -->
+  <text x="20" y="690" class="hint">Gợi ý: Trong Seat Map Editor, hãy vẽ polygon trùng với các khối A/B/C để tạo Zone.</text>
+</svg>
