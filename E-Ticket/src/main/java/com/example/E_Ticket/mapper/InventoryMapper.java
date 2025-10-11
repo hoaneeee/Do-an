@@ -9,7 +9,8 @@ public class InventoryMapper {
                 c.getId(),
                 c.getEvent().getId(),
                 c.getHoldTimeoutSec(),
-                c.getAllowOverbook()
+                c.getAllowOverbook(),
+                c.getMaxRenewPerHold()
         );
     }
 }

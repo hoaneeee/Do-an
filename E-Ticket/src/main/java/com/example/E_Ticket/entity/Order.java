@@ -52,10 +52,20 @@ public class Order {
     @Column(nullable = false, updatable = false)
     private Instant createdAt;
 
-    /** Quan hệ thuận tiện, không bắt buộc */
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
+    /* total refunded */
+    @Column(nullable = false, precision = 12, scale = 2)
+    @Builder.Default
+    private BigDecimal refundedAmount = BigDecimal.ZERO;
 
     public enum Status { PENDING, PAID, CANCELLED, CHECKED_IN }
+
+    /* so tien con lai khi refunded */
+    public BigDecimal netPaid() {
+        return (total == null ? BigDecimal.ZERO : total)
+                .subtract(refundedAmount == null ? BigDecimal.ZERO : refundedAmount);
+    }
 }

@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -42,6 +43,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getByCode(String code) {
         return orderRepository.findOrderByCode(code).orElseThrow(() -> new NotFoundException("Order Not Found"));
+    }
+
+    @Override
+    public Optional<Order> findByCode(String code) {
+        return orderRepository.findOrderByCode(code);
     }
 
     @Override

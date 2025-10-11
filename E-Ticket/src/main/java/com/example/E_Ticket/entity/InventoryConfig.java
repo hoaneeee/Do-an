@@ -21,4 +21,8 @@ public class InventoryConfig {
     @Builder.Default
     @Column(nullable = false)
     private Boolean allowOverbook = false;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer maxRenewPerHold = 1;
 }

@@ -1,10 +1,191 @@
+<!--
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="_layout :: html(~{::title}, ~{::style}, ~{::section})">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <title>Đơn hàng</title>
+    <style>.cardx{border:0;border-radius:16px;box-shadow:0 12px 36px rgba(16,24,40,.08)}</style>
 </head>
 <body>
-$END$
+<section class="container" th:if="${order != null}">
+    <div class="card cardx">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4 class="fw-bold mb-1">Đơn hàng <span th:text="${order.code}">CODE</span></h4>
+                    <div class="text-secondary">Trạng thái: <b th:text="${order.status}">PAID</b></div>
+                </div>
+                <div class="h5 m-0">
+                    Tổng: <span th:text="${#numbers.formatInteger(order.total,0)}">0</span> đ
+                </div>
+            </div>
+            <hr>
+
+            <div class="table-responsive">
+                <table class="table align-middle m-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Loại vé</th>
+                        <th class="text-center">SL</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-end">Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="it : ${order.items}">
+                        <td th:text="${it.ticketType != null ? it.ticketType.name : it.displayName}">Vé</td>
+                        <td class="text-center" th:text="${it.qty}">1</td>
+                        <td class="text-end" th:text="${#numbers.formatInteger(it.price,0)}">0</td>
+                        <td class="text-end" th:text="${#numbers.formatInteger(it.lineTotal,0)}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            &lt;!&ndash; Refund block &ndash;&gt;
+            <div class="mt-4">
+                <a href="/" class="btn btn-link"><i class="bi bi-arrow-left"></i> Về trang chủ</a>
+
+                <a class="btn btn-outline-danger ms-2"
+                   th:if="${refundable}"
+                   th:href="@{'/orders/' + ${order.code} + '/refund'}">
+                    <i class="bi bi-arrow-counterclockwise"></i> Yêu cầu hoàn tiền
+                </a>
+
+                &lt;!&ndash; thông báo sau redirect submit &ndash;&gt;
+                <div th:if="${param.refund_submitted}" class="alert alert-success mt-3">
+                    Yêu cầu hoàn tiền đã được gửi. Chúng tôi sẽ xử lý sớm nhất.
+                </div>
+
+                <div th:if="${param.err}" class="alert alert-danger mt-3">
+          <span th:switch="${param.err}">
+            <span th:case="'not_refundable'">Đơn hàng không đủ điều kiện hoàn tiền.</span>
+            <span th:case="'duplicate'">Bạn đã gửi yêu cầu hoàn tiền cho đơn này.</span>
+            <span th:case="'amount'">Số tiền không hợp lệ.</span>
+            <span th:case="*">Không thể gửi yêu cầu hoàn tiền.</span>
+          </span>
+                </div>
+            </div>
+
+            <div th:if="${order.status != null and order.status.name() == 'PAID'}"
+                 class="alert alert-success mt-3">
+                Thanh toán thành công. Vé/QR sẽ được gửi qua email.
+            </div>
+
+            &lt;!&ndash; Lịch sử refund &ndash;&gt;
+            <div class="mt-4" th:if="${refunds != null and !#lists.isEmpty(refunds)}">
+                <h6 class="fw-bold">Yêu cầu hoàn tiền</h6>
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="r : ${refunds}">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div>Trạng thái: <b th:text="${r.status}">PENDING</b></div>
+                                <div class="text-secondary small" th:text="${r.reason}">Lý do</div>
+                            </div>
+                            <div>
+                                <b th:text="${#numbers.formatInteger(r.amount,0)}">0</b> đ
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>
+-->
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="_layout :: html(~{::title}, ~{::style}, ~{::section})">
+<head>
+    <title>Đơn hàng</title>
+    <style>.cardx{border:0;border-radius:16px;box-shadow:0 12px 36px rgba(16,24,40,.08)}</style>
+</head>
+<body>
+<section class="container" th:if="${order != null}">
+    <div class="card cardx">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4 class="fw-bold mb-1">Đơn hàng <span th:text="${order.code}">CODE</span></h4>
+                    <div class="text-secondary">Trạng thái: <b th:text="${order.status}">PAID</b></div>
+                    <div class="text-secondary">
+                        Đã hoàn: <b th:text="${#numbers.formatInteger(order.refundedAmount,0)}">0</b> ₫
+                        • Còn lại: <b th:text="${#numbers.formatInteger(order.netPaid(),0)}">0</b> ₫
+                    </div>
+                </div>
+                <div class="h5 m-0">
+                    Tổng: <span th:text="${#numbers.formatInteger(order.total,0)}">0</span> ₫
+                </div>
+            </div>
+            <hr>
+
+            <div class="table-responsive">
+                <table class="table align-middle m-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Loại vé</th>
+                        <th class="text-center">SL</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-end">Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="it : ${order.items}">
+                        <td th:text="${it.ticketType != null ? it.ticketType.name : it.displayName}">Vé</td>
+                        <td class="text-center" th:text="${it.qty}">1</td>
+                        <td class="text-end" th:text="${#numbers.formatInteger(it.price,0)}">0</td>
+                        <td class="text-end" th:text="${#numbers.formatInteger(it.lineTotal,0)}">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="/" class="btn btn-link"><i class="bi bi-arrow-left"></i> Về trang chủ</a>
+
+                <a class="btn btn-outline-danger ms-2"
+                   th:if="${refundable}"
+                   th:href="@{'/orders/' + ${order.code} + '/refund'}">
+                    <i class="bi bi-arrow-counterclockwise"></i> Yêu cầu hoàn tiền
+                </a>
+
+                <div th:if="${param.refund_submitted}" class="alert alert-success mt-3">
+                    Yêu cầu hoàn tiền đã được gửi. Chúng tôi sẽ xử lý sớm nhất.
+                </div>
+                <div th:if="${param.err}" class="alert alert-danger mt-3">
+          <span th:switch="${param.err}">
+            <span th:case="'not_refundable'">Đơn hàng không đủ điều kiện hoàn tiền.</span>
+            <span th:case="'duplicate'">Bạn đã gửi yêu cầu hoàn tiền cho đơn này.</span>
+            <span th:case="'amount'">Số tiền không hợp lệ.</span>
+            <span th:case="*">Không thể gửi yêu cầu hoàn tiền.</span>
+          </span>
+                </div>
+            </div>
+
+            <div th:if="${order.status != null and order.status.name() == 'PAID'}"
+                 class="alert alert-success mt-3">
+                Thanh toán thành công. Vé/QR sẽ được gửi qua email.
+            </div>
+
+            <div class="mt-4" th:if="${refunds != null and !#lists.isEmpty(refunds)}">
+                <h6 class="fw-bold">Yêu cầu hoàn tiền</h6>
+                <ul class="list-group">
+                    <li class="list-group-item" th:each="r : ${refunds}">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <div>Trạng thái: <b th:text="${r.status}">PENDING</b></div>
+                                <div class="text-secondary small" th:text="${r.reason}">Lý do</div>
+                            </div>
+                            <div><b th:text="${#numbers.formatInteger(r.amount,0)}">0</b> ₫</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>

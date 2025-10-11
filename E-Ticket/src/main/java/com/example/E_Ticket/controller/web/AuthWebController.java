@@ -99,4 +99,14 @@ public class AuthWebController {
         }
         return "/auth/verify_code_form";
     }
+    @GetMapping("/whoami")
+    @ResponseBody
+    public java.util.Map<String,Object> whoami(
+            org.springframework.security.core.Authentication auth,
+            jakarta.servlet.http.HttpSession session) {
+        return java.util.Map.of(
+                "user", auth!=null && auth.isAuthenticated()? auth.getName(): null,
+                "sid",  session!=null? session.getId(): null
+        );
+    }
 }

@@ -26,4 +26,8 @@ public class InventoryPublicApi {
     public void consume(@PathVariable Long id){
         service.consumeHold(id);
     }
+    @PostMapping("/holds/{id}/renew")
+    public TicketHoldDto renew(@PathVariable Long id){
+        return service.renewHold(id);
+    }
 }

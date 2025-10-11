@@ -11,5 +11,7 @@ import java.util.Optional;
 public interface ZonePriceRepository extends JpaRepository<ZonePrice, Long> {
     List<ZonePrice> findByEvent_Id(Long eventId);
     Optional<ZonePrice> findByEvent_IdAndTicketType_IdAndSeatZone_Id(Long eventId, Long ticketTypeId, Long seatZoneId);
+    Optional<ZonePrice> findFirstByEvent_IdAndSeatZone_Id(Long eventId, Long seatZoneId);
+
 }
 

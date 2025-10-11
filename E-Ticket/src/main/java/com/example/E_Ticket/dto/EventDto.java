@@ -12,5 +12,6 @@ public record EventDto (
         Long venueId,
         String venueName,
         String venueAddress,
-        Long seatMapId
+        Long seatMapId,
+        String description
 ){ }

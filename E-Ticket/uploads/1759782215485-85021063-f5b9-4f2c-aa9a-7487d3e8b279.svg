@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+  <title>Rạp Chiếu Phim Quốc Gia – Sơ đồ ghế</title>
+
+  <!-- Nền -->
+  <rect x="0" y="0" width="1200" height="900" fill="#ffffff"/>
+
+  <!-- MÀN HÌNH -->
+  <rect x="250" y="40" width="700" height="50" rx="12" fill="#111827"/>
+  <text x="600" y="72" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#ffffff">
+    MÀN HÌNH
+  </text>
+
+  <!-- Ghi chú trái/phải/lối vào -->
+  <text x="30" y="120" font-family="Arial" font-size="13" fill="#6b7280">Lối vào</text>
+  <text x="1140" y="120" text-anchor="end" font-family="Arial" font-size="13" fill="#6b7280">Lối vào</text>
+
+  <!-- VIP (Giữa gần màn hình) -->
+  <g class="zone"
+     data-zone-name="VIP"
+     data-zone-code="VIP"
+     data-rows="4"
+     data-cols="14"
+     data-price="180000"
+     data-tt="VIP">
+    <rect x="220" y="140" width="760" height="110" fill="#fde68a" stroke="#f59e0b" stroke-width="2"/>
+    <text x="600" y="200" text-anchor="middle" font-family="Arial" font-size="16" fill="#7c2d12">VIP</text>
+  </g>
+
+  <!-- Khu A (trái, trung tâm) -->
+  <g class="zone"
+     data-zone-name="A"
+     data-zone-code="A"
+     data-rows="6"
+     data-cols="10"
+     data-price="120000"
+     data-tt="Standard">
+    <rect x="120" y="290" width="420" height="180" fill="#e0f2fe" stroke="#93c5fd" stroke-width="2"/>
+    <text x="330" y="380" text-anchor="middle" font-family="Arial" font-size="16" fill="#1e3a8a">KHU A</text>
+  </g>
+
+  <!-- Khu B (phải, trung tâm) -->
+  <g class="zone"
+     data-zone-name="B"
+     data-zone-code="B"
+     data-rows="6"
+     data-cols="10"
+     data-price="120000"
+     data-tt="Standard">
+    <rect x="660" y="290" width="420" height="180" fill="#e0f2fe" stroke="#93c5fd" stroke-width="2"/>
+    <text x="870" y="380" text-anchor="middle" font-family="Arial" font-size="16" fill="#1e3a8a">KHU B</text>
+  </g>
+
+  <!-- Khu C (trái, phía sau) -->
+  <g class="zone"
+     data-zone-name="C"
+     data-zone-code="C"
+     data-rows="7"
+     data-cols="12"
+     data-price="90000"
+     data-tt="Standard">
+    <rect x="80" y="520" width="480" height="220" fill="#e5e7eb" stroke="#9ca3af" stroke-width="2"/>
+    <text x="320" y="630" text-anchor="middle" font-family="Arial" font-size="16" fill="#374151">KHU C</text>
+  </g>
+
+  <!-- Khu D (phải, phía sau) -->
+  <g class="zone"
+     data-zone-name="D"
+     data-zone-code="D"
+     data-rows="7"
+     data-cols="12"
+     data-price="90000"
+     data-tt="Standard">
+    <rect x="640" y="520" width="480" height="220" fill="#e5e7eb" stroke="#9ca3af" stroke-width="2"/>
+    <text x="880" y="630" text-anchor="middle" font-family="Arial" font-size="16" fill="#374151">KHU D</text>
+  </g>
+
+  <!-- Lối đi (chỉ để trang trí) -->
+  <rect x="40"  y="260" width="1120" height="14" fill="#f3f4f6"/>
+  <rect x="40"  y="490" width="1120" height="14" fill="#f3f4f6"/>
+
+  <!-- Chú thích -->
+  <g>
+    <circle cx="70" cy="800" r="8" fill="#22c55e"/><text x="90" y="805" font-size="14" font-family="Arial">Còn</text>
+    <circle cx="170" cy="800" r="8" fill="#f59e0b"/><text x="190" y="805" font-size="14" font-family="Arial">Đang giữ</text>
+    <circle cx="300" cy="800" r="8" fill="#3b82f6"/><text x="320" y="805" font-size="14" font-family="Arial">Bạn giữ</text>
+    <circle cx="430" cy="800" r="8" fill="#ef4444"/><text x="450" y="805" font-size="14" font-family="Arial">Đã bán</text>
+  </g>
+
+  <!-- Ghi chú cuối -->
+  <text x="600" y="870" text-anchor="middle" font-family="Arial" font-size="12" fill="#6b7280">
+    Các zone sẽ tự sinh ghế dựa trên data-rows/cols. Giá trong SVG chỉ để khởi tạo ZonePrice; giá bán chính lấy theo ZonePrice trong DB.
+  </text>
+</svg>

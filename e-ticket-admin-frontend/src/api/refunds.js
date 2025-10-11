@@ -16,3 +16,10 @@ export const rejectRefund = (id, note) =>
 
 export const markRefundPaid = (id, note) =>
   http.post(`/admin/v1/refunds/${id}/paid`, { note }).then((r) => r.data);
+
+// 🆕 Admin badge & panel:
+export const pendingCount = () =>
+  http.get("/admin/v1/refunds/pending-count").then((r) => r.data.count);
+
+export const recentPending = () =>
+  http.get("/admin/v1/refunds/recent-pending").then((r) => r.data);

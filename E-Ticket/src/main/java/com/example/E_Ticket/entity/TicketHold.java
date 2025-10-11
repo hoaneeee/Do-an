@@ -39,5 +39,9 @@ public class TicketHold {
     @Column(nullable = false)
     private Status status = Status.ACTIVE;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer renewCount = 0;
+
     public enum Status { ACTIVE, RELEASED, CONSUMED, EXPIRED }
 }

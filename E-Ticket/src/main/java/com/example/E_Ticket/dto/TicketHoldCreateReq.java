@@ -6,4 +6,5 @@ public record TicketHoldCreateReq(
         Integer qty,
         Long userId,
         String sessionId
+
 ) {}

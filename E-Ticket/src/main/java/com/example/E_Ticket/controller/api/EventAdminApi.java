@@ -58,7 +58,7 @@ public class EventAdminApi {
         if (e.getSeatMap() == null) {
             throw new NotFoundException("Event chưa gắn SeatMap");
         }
-        return seatZoneRepository.findAllBySeatMap_Id(e.getSeatMap().getId())
+        return seatZoneRepository.findBySeatMap_Id(e.getSeatMap().getId())
                 .stream()
                 .map(z -> new SeatZoneDto(
                         z.getId(),

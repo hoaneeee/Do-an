@@ -55,4 +55,5 @@ public class TicketTypeServiceImpl implements TicketTypeService {
     public void delete(Long id) {
         ticketTypeRepository.deleteById(id);
     }
+
 }

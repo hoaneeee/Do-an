@@ -19,7 +19,8 @@ public class EventMapper {
                 e.getVenue()!=null? e.getVenue().getId() : null,
                 e.getVenue()!=null? e.getVenue().getName() : null,
                 e.getVenue()!=null? e.getVenue().getAddress() : null,
-                e.getSeatMap()!=null? e.getSeatMap().getId() : null
+                e.getSeatMap()!=null? e.getSeatMap().getId() : null,
+                e.getDescription()
         );
     }
 

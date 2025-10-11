@@ -37,7 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()   // <--- public đúng nghĩa
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/uploads/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
@@ -57,8 +57,9 @@ public class SecurityConfig {
                                 "/verify","/resend","/verify/**",      // nếu có dùng kiểu /verify?token=...
                                 "/verify-code",
                                 "/css/**", "/js/**", "/images/**", "/uploads/**",
-                                "/h2-console/**", "/error", "/favicon.ico").permitAll()
-                        .requestMatchers("/cart/**", "/checkout/**", "/orders/**").authenticated()
+                                "/h2-console/**", "/error", "/favicon.ico","/whoami").permitAll()
+                        .requestMatchers("/cart/**").permitAll()
+                        .requestMatchers("/checkout/**", "/orders/**","/payment/**","/web/me/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(f -> f

@@ -29,6 +29,7 @@ public class Coupon {
     private Integer maxUse;
     private Integer perUserLimit;
 
+    @Builder.Default
     @Column(nullable=false)
     private Integer used = 0;
 

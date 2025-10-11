@@ -13,4 +13,7 @@ public interface InventoryService {
     void releaseHold(Long holdId);     // user cancel / timeout clean
     void consumeHold(Long holdId);     // create successfully
     void cleanupExpired();             // clean
+
+    TicketHoldDto renewHold(Long holdId);
+    boolean isHoldActive(Long holdId);
 }

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="_layout :: html(~{::title}, ~{::style}, ~{::section})">
+<head>
+    <title>Thanh toán</title>
+    <style>
+        .cardx{ border:0; border-radius:16px; box-shadow:0 12px 36px rgba(16,24,40,.08) }
+        .price{ font-weight:800 }
+    </style>
+</head>
+<body>
+<section class="container">
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="card cardx">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Thông tin người mua</h5>
+                    <form method="post" th:action="@{/checkout/place-order}" class="vstack gap-3">
+                        <div>
+                            <label class="form-label">Họ tên</label>
+                            <input name="buyerName" class="form-control" placeholder="Nguyễn Văn A" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Email</label>
+                            <input name="buyerEmail" type="email" class="form-control" placeholder="you@example.com" required>
+                        </div>
+                        <div>
+                            <label class="form-label">Điện thoại</label>
+                            <input name="buyerPhone" class="form-control" placeholder="09xx xxx xxx">
+                        </div>
+                        <button class="btn btn-primary btn-lg mt-2">Đặt vé</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card cardx">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Đơn hàng</h5>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="d-flex justify-content-between" th:each="l : ${cart.lines}">
+                            <div>
+                                <div class="fw-semibold" th:text="${l.ticketTypeName}"></div>
+                                <div class="text-secondary small">
+                                    x <span th:text="${l.qty}">1</span>
+                                </div>
+                            </div>
+                            <div class="price"
+                                 th:text="${#numbers.formatInteger(l.lineTotal(),0)}"></div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <div class="text-end fw-bold">Tổng tiền</div>
+                            <div class="text-end text-danger fs-5">
+                                [[${#numbers.formatDecimal(preview.total, 0, 'COMMA', 0, 'POINT')}]] đ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="/cart" class="btn btn-link mt-3"><i class="bi bi-arrow-left"></i> Về giỏ hàng</a>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -45,6 +45,7 @@ public class InventoryServiceImpl implements InventoryService {
         });
         if (req.holdTimeoutSec() != null) cfg.setHoldTimeoutSec(req.holdTimeoutSec());
         if (req.allowOverbook() != null) cfg.setAllowOverbook(req.allowOverbook());
+        if (req.maxRenewPerHold() != null) cfg.setMaxRenewPerHold(req.maxRenewPerHold());
         return InventoryMapper.toDto(configRepo.save(cfg));
     }
 
@@ -93,19 +94,63 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     @Transactional
-    public void consumeHold(Long holdId) {
-        var h = holdRepo.findByIdAndStatus(holdId, Status.ACTIVE)
+    public TicketHoldDto renewHold(Long holdId) {
+        var h = holdRepo.findByIdAndStatus(holdId, TicketHold.Status.ACTIVE)
                 .orElseThrow(() -> new NotFoundException("Hold not found or not active"));
-        h.setStatus(Status.CONSUMED);
-        holdRepo.save(h);
+
+        // nếu đã hết hạn thì convert sang EXPIRED luôn
+        if (h.getExpiresAt().isBefore(Instant.now())) {
+            h.setStatus(TicketHold.Status.EXPIRED);
+            holdRepo.save(h);
+            throw new BusinessException("Hold expired");
+        }
+
+        // Lấy ngưỡng (hoặc đặt cố định = 1)
+        int max = getConfig(h.getEvent().getId()).maxRenewPerHold();  // or: int max = 1;
+
+        if (h.getRenewCount() >= max) {
+            h.setStatus(TicketHold.Status.RELEASED);
+            holdRepo.save(h);
+            throw new BusinessException("RENEW_LIMIT");
+        }
+
+        // cho renew
+        var cfg = getConfig(h.getEvent().getId());
+        h.setRenewCount(h.getRenewCount() + 1);
+        h.setExpiresAt(Instant.now().plusSeconds(cfg.holdTimeoutSec()));
+        return TicketHoldMapper.toDto(holdRepo.save(h));
     }
 
-    // Dọn rác mỗi 1 phút: những hold quá hạn chuyển EXPIRED
+    @Override
+    @Transactional
+    public void consumeHold(Long holdId) {
+        var h = holdRepo.findByIdAndStatus(holdId, TicketHold.Status.ACTIVE)
+                .orElseThrow(() -> new NotFoundException("Hold not found or not active"));
+        h.setStatus(TicketHold.Status.CONSUMED);
+        holdRepo.save(h);
+
+        var t = h.getTicketType();
+        int sold = (t.getSold() == null ? 0 : t.getSold());
+        t.setSold(sold + h.getQty());
+        ticketTypeRepo.save(t);
+    }
+
     @Scheduled(fixedDelay = 60_000)
     @Transactional
     public void cleanupExpired() {
         var now = Instant.now();
         holdRepo.findByStatusAndExpiresAtBefore(Status.ACTIVE, now)
-                .forEach(h -> { h.setStatus(Status.EXPIRED); holdRepo.save(h); });
+                .forEach(h -> {
+                    h.setStatus(Status.EXPIRED);
+                    holdRepo.save(h);
+                });
     }
+    @Override
+    public boolean isHoldActive(Long holdId){
+        return holdRepo.findByIdAndStatus(holdId, TicketHold.Status.ACTIVE)
+                .filter(h -> h.getExpiresAt().isAfter(Instant.now()))
+                .isPresent();
+    }
+
+
 }

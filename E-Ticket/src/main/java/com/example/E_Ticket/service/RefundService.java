@@ -11,4 +11,18 @@ public interface RefundService {
     RefundDto approve(Long refundId, String adminEmail, String note);
     RefundDto reject(Long refundId, String adminEmail, String note);
     RefundDto markPaid(Long refundId, String adminEmail, String note);
+
+
+    // cho Admin badge/panel
+    long countPending();
+    List<RefundDto> recentPending();
+
+    // cho User badge update
+    long countRecentUpdatesOfUser(Long userId);
+    List<RefundDto> recentUpdatesOfUser(Long userId);
+
+    long countRecentUpdatesOfUserEmail(String email);
+
+    // ấy danh sách 10 cập nhật gần đây
+    List<RefundDto> recentUpdatesOfUserEmail(String email);
 }

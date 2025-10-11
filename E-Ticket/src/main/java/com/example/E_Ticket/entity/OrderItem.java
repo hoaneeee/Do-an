@@ -36,4 +36,9 @@ public class OrderItem {
 
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
+
+    @Transient
+    public BigDecimal getLineTotal() {
+        return (price == null || qty == null) ? BigDecimal.ZERO : price.multiply(BigDecimal.valueOf(qty));
+    }
 }

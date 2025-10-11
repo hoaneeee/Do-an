@@ -4,5 +4,6 @@ public record InventoryConfigDto(
         Long id,
         Long eventId,
         Integer holdTimeoutSec,
-        Boolean allowOverbook
+        Boolean allowOverbook,
+        Integer maxRenewPerHold
 ) {}
